@@ -19,13 +19,14 @@ public class Main {
     int tenantId = tenantService.addTenant(new AddTenantRequest("tenant1"));
     int topicId = topicService.addTopic(new AddTopicRequest(tenantId, "topicName"));
 
-    // Add Discourse source Request;
+    // Add Discourse source ;
     DiscourseSourceRequest sourceRequest = new DiscourseSourceRequest(320712);
     int topicSourceId = topicSourceService.addTopicSource(new AddTopicSourceRequest(topicId, sourceRequest));    
 
+    // Start a cornJob invocation.
     cornJob.pullFeedbacks();
 
-    // Get Feedback;
+    // Read all feedbacks;
     for(Feedback feedback : feedbackService.getFeedbacks(topicSourceId)) {
       ReviewRecordData data = (ReviewRecordData)feedback.getData();
       DiscourseRecordMetadata metadata = (DiscourseRecordMetadata)feedback.getRecordMetadata();
