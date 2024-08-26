@@ -1,69 +1,30 @@
-## Running Java on CoderPad
+# FeedbackIngestionSystem.
 
-This pad provides an environment with the capability of creating a project with multiple Java files, as well as JUnit tests.
+* The backend ingestion supports different types of sources to ingest feedback into a topic.
+* Tenants can listen to this feedback in the topic.
 
-To get started, edit the `src/main/java/coderpad/app/Main.java` file, and run the code.
+## Data Model
 
-### IntelliSense
+* System has mainly three components - Tenant, Topic, TopicSource
+* Tenant : 
+  *  This refers to the end users of the backend system.
+  *  Each tenant needs to register with the system and start creating new topics. 
+* Topic :
+   * This refers to the topics to which sources will ingest the feedback to.
+   * Each Topic can have multiple sources like two play store apps or one playstore app and one discourse etc.    
+* TopicSource :
+   * This refers to the system which ingest the feedbacks to a topic.
+   * While adding new source , source specific identifiers needs to be provided. For example, topic_id for discourse , app id for play store. 
+   * System currently supports three type of sources : DISCOURSE , INTERCOM , PLAY_STORE , TWITTER
 
-IntelliSense is running across your entire project, allowing you to see when there are syntax errors or to get quick hints for how to resolve errors.
+## Features
 
-### Shell
+* System runs a corn job to which reads all the topicSources database and call the sources. The System needs to invoke : PullFeedbackCornJob.java daily to extract the data. 
+* System also created the endpoints for sources to push the data.
+* Currently only DISCOURSE source data extractor and push endpointsare implemented.
 
-A shell is provided to you so you can inspect your container in more detail. The shell can be used to run maven commands with `mvn`
+## Usage 
 
-**Note: while it's possible to edit files directly from the shell, we recommend using the editor to make your changes. That way, other people in the Pad can see your changes as they're being made.**
-
-### Dependencies
-
-The dependencies are listed in the `pom.xml` file.
-
-### Run Targets
-
-The `.cpad` file serves as the configuration file for your project's run targets. The term "run target" refers to the predefined commands you can execute via the "Run Button" at the top of your Pad. This file is written in JSON format, making it easy to read and modify.
-
-By default, your `.cpad` file should look like this:
-
-```json
-{
-  "targets": {
-    "run": {
-      "label": "Main",
-      "command": "mvn compile exec:java -Dmaven.plugin.validation=BRIEF"
-    },
-    "test": {
-      "label": "Tests",
-      "command": "mvn test"
-    }
-  }
-}
-```
-
-Each run target is defined by a unique key inside the `targets` object. There are two default targets available: `run` and `test`.
-
-### Understanding The Run Target Structure
-
-Each target has two properties: `label` and `command`.
-
-- The `label` property is a user-friendly name that identifies the target. This allows you to set a human readable label for the specified command. This is what will show up in the run button's text when the target is selected.
-
-- The `command` property specifies the actual command to be executed when the target is run. This command can be anything from a simple script execution, as seen in the example above (`"mvn compile exec:java -Dmaven.plugin.validation=BRIEF"`), to a more complex command involving multiple operations.
-
-### Modifying and Creating Run Targets
-
-If you want to change the command of an existing target, locate its key under the `targets` object and modify the `command` property accordingly.
-
-For example, if you wish to change the command of the `run` target to execute a different script, you would modify the command property like so:
-
-```json
-"run": {
-  "label": "Main",
-  "command": "mvn compile exec:java -Dexec.mainClass=com.example.Main"
-}
-```
-
-You can also add your own run targets in the same way. There is currently no limit on the amount of run targets in your project. The only constraint is that every target must have a unique key.
-
-### Container Limits
-
-The container running your application has a few limitations. Currently, we don't limit your CPU usage, though this may change in future. In addition to CPU, we monitor the network bandwidth that is consumed, and limit you to 75mb for the duration of the container. Finally, we limit the amount of memory accessible to each container to 0.5 GB.
+* BackendSystem.java provides the services to the backend system which you can call from Main.java
+    
+* PullFeedbackCornJob.java is currenlty not scheduled but you can invoke it Main.java
