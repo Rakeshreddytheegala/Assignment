@@ -1,2 +1,0 @@
-# Assignment
-Feedback Ingestion System.
